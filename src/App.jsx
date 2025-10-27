@@ -42,27 +42,34 @@ const App = () => {
       return { ...prev, attendance: newAttendance }; // other states are same , no changes made
     });
   }, []);
-  // so many copies due to immutabiltly , should not edit the state directlty
+  // Too many copies due to immutabiltly , should not edit the state directlty
 
+  // selection of bulk operation
   const handleBulkStatusChange = useCallback((newStatus) => {
     setAppState((prev) => ({ ...prev, bulkStatus: newStatus }));
   }, []);
 
+  // selects entire students and days (entire cell in the table)
   const applyBulkStatus = useCallback((status) => {
     setAppState((prev) => {
       const newAttendance = { ...prev.attendance };
       for (const student of prev.students) {
-        newAttendance[student.regNo] = { ...newAttendance[student.regNo] };
+        newAttendance[student.regNo] = { ...newAttendance[student.regNo] };  // students
         for (let day = 1; day <= prev.daysInMonth; day++) {
-          newAttendance[student.regNo][day] = {M: status , A: status};
+           const date = new Date(prev.currentDate.getFullYear(), prev.currentDate.getMonth(), day);
+          const isSunday = date.getDay() === 0; 
+        
+        if (isSunday) continue;
+          
+          newAttendance[student.regNo][day] = {M: status , A: status}; // days 
         }
       }
       return { ...prev, attendance: newAttendance };
     });
   }, []);
 
+// Attendance table
   const handleDayBulkUpdate = useCallback((day, status) => {
-    
     setAppState(prev => {
       const newAttendance = { ...prev.attendance };
       for (const student of prev.students) {
@@ -72,18 +79,19 @@ const App = () => {
       return { ...prev, attendance: newAttendance };
     });
   }, []);
-   
+
+  // Attendance row
   const handleStudentBulkUpdate = useCallback((regNo, status) => {
-  setAppState(prev => { 
-    const newAttendance = { ...prev.attendance };
+    setAppState(prev => { 
+      const newAttendance = { ...prev.attendance };
 
-    for (let day = 1; day <= prev.daysInMonth; day++) {
-      const date = new Date(prev.currentDate.getFullYear(), prev.currentDate.getMonth(), day);
-      const isSunday = date.getDay() === 0;
-      if (isSunday) continue;
+      for (let day = 1; day <= prev.daysInMonth; day++) {
+        const date = new Date(prev.currentDate.getFullYear(), prev.currentDate.getMonth(), day);
+        const isSunday = date.getDay() === 0;
+        if (isSunday) continue;
 
-      if (!newAttendance[regNo]) newAttendance[regNo] = {};
-      newAttendance[regNo][day] = { M: status, A: status };
+        if (!newAttendance[regNo]) newAttendance[regNo] = {};
+          newAttendance[regNo][day] = { M: status, A: status };
     }
 
     return { ...prev, attendance: newAttendance };
@@ -138,16 +146,19 @@ const App = () => {
 
   return (
     <div className="app-container">
+
       <h1 className="app-header">
         <CalendarRange size={32} style={{ marginRight: "0.5rem" }} />
         Attendance Register ({currentMonthName})
-      </h1>
+      </h1> 
+       
 
       <BulkStatusSelector
         bulkStatus={appState.bulkStatus}
         onBulkStatusChange={handleBulkStatusChange}
         applyBulkStatus={applyBulkStatus}
       />
+      
 
       <AttendanceTable
         appState={appState}
@@ -157,6 +168,7 @@ const App = () => {
         handleDayBulkUpdate={handleDayBulkUpdate}
         handleCellChange={handleCellChange}
         handleStudentBulkUpdate={handleStudentBulkUpdate}
+        applyBulkStatus={applyBulkStatus}
         
       />
     </div>

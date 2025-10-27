@@ -2,9 +2,10 @@ import React from 'react';
 import './App.css';
 import { STATUSES } from './constants';
 
-export const BulkStatusSelector = React.memo(({ bulkStatus, onBulkStatusChange }) => (
-  <div className="bulk-status-selector">
+export const BulkStatusSelector = React.memo(({ bulkStatus, onBulkStatusChange, applyBulkStatus }) => (
+   <><div className="bulk-status-selector">
     <p>Set Status for Bulk Operations:</p>
+
     <div className="bulk-status-buttons">
       {Object.keys(STATUSES).map((key) => (
         <button
@@ -17,4 +18,6 @@ export const BulkStatusSelector = React.memo(({ bulkStatus, onBulkStatusChange }
       ))}
     </div>
   </div>
+    
+         </>
 ));
