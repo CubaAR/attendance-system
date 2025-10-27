@@ -36,7 +36,7 @@ const App = () => {
       const newAttendance = { ...prev.attendance }; // copies full attendance map
       newAttendance[regNo] = { ...newAttendance[regNo] }; // copies regNO
       newAttendance[regNo][day] = { ...newAttendance[regNo][day] }; //copies day
-      newAttendance[regNo][day][slot] = newStatus; // chnages made and updated to newStatus (all the chnages are updated in newStatus and rest are same)
+      newAttendance[regNo][day][slot] = newStatus; // changes made and updated to newStatus (all the changes are updated in newStatus and rest are same)
       return { ...prev, attendance: newAttendance }; // other states are same , no changes made
     });
   }, []);
