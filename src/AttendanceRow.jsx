@@ -4,7 +4,7 @@ import './App.css';
 import { STATUSES } from './constants';
 
 export const AttendanceRow = React.memo(
-  ({ student, daysArray, attendance, studentTotalP, onCellChange }) => (
+  ({ student, daysArray, attendance, studentTotalP, onCellChange, bulkStatus, onStudentBulkUpdate }) => (
     <tr>
 
       <td
@@ -22,11 +22,13 @@ export const AttendanceRow = React.memo(
       <td className="sticky-left" style={{ textAlign: 'center', minWidth: '120px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ lineHeight: '1.2rem' }}>
-            <div>{student.name.split(' ')[0]}</div>
-            <div>{student.name.split(' ').slice(1).join(' ')}</div>
+            <div>{student.name}</div>
           </div>
 
+          {/* Bulk selection per student */}
           <button
+          title={`Bulk set ${student.name} to ${STATUSES[bulkStatus]} for full month`}
+            onClick={() => onStudentBulkUpdate(student.regNo, bulkStatus)}
             style={{
               padding: '0.25rem',
               borderRadius: '50%',

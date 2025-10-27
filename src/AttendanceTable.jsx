@@ -1,19 +1,36 @@
 import { Plus } from 'lucide-react';
 import './App.css';
 import { AttendanceRow } from './AttendanceRow';
+import { STATUSES } from './constants';
 
 export const AttendanceTable = ({
   appState,
   daysArray,
   insights,
   handleCellChange,
+  bulkStatus,
+  handleDayBulkUpdate,
+  handleStudentBulkUpdate,
+  applyBulkStatus
 }) => (
   <div className="attendance-table-container">
     <table className="attendance-table">
       <thead>
         <tr>
           <th className="sticky-left header-indigo" rowSpan="2">Reg No</th>
-          <th className="sticky-left header-indigo" rowSpan="2">Students Name</th>
+          <th className="sticky-left header-indigo" rowSpan="2">
+            <div className="student-header-flex">
+              <span>Students Name</span>
+                <button
+                  className="apply-month-button"
+                  onClick={() => applyBulkStatus(appState.bulkStatus)}
+                  disabled={!appState.bulkStatus}
+                  title={`Set ${STATUSES[appState.bulkStatus]} for full month`}
+                >
+                  <Plus />
+                </button>
+            </div>
+          </th>
 
           {daysArray.map((day) => {
             const date = new Date(
@@ -40,8 +57,10 @@ export const AttendanceTable = ({
                   </small>
                   {/* Disable editings in sundays */}
                   {!isSunday && (
+                    // Bulk selection per day 
                     <button
                       title={`Bulk update - ${date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', weekday: 'short' })}`}
+                      onClick={() => handleDayBulkUpdate(day, bulkStatus)}
                       style={{
                         padding: '0.25rem',
                         borderRadius: '50%',
@@ -57,10 +76,10 @@ export const AttendanceTable = ({
               </th>
             );
           })}
-          {/* Total present for entire month per students */}
+          {/* Total present for month per students */}
           <th className="header-indigo" rowSpan="2">Total P</th>
         </tr>
-        {/* Morning and afteroon slots */}
+        {/* Morning and afteroon slots(cells) */}
         <tr>
           {daysArray.map((day) =>
             ['M', 'A'].map((slot) => (
@@ -81,6 +100,9 @@ export const AttendanceTable = ({
             attendance={appState.attendance}
             onCellChange={handleCellChange}
             studentTotalP={insights.studentMonthlyTotals[student.regNo]?.P || 0}
+            bulkStatus={bulkStatus}
+            onStudentBulkUpdate={handleStudentBulkUpdate}
+            
           />
         ))}
         </tbody>
