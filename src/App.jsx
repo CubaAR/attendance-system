@@ -74,7 +74,7 @@ const App = () => {
   }, []);
    
   const handleStudentBulkUpdate = useCallback((regNo, status) => {
-  setAppState(prev => { //
+  setAppState(prev => { 
     const newAttendance = { ...prev.attendance };
 
     for (let day = 1; day <= prev.daysInMonth; day++) {
