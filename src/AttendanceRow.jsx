@@ -4,7 +4,7 @@ import './App.css';
 import { STATUSES } from './constants';
 
 export const AttendanceRow = React.memo(
-  ({ student, daysArray, attendance, studentTotalP, onCellChange }) => (
+  ({ student, daysArray, attendance, studentTotalP, onCellChange, bulkStatus, onStudentBulkUpdate }) => (
     <tr>
 
       <td
@@ -27,6 +27,8 @@ export const AttendanceRow = React.memo(
           </div>
 
           <button
+          title={`Bulk set ${student.name} to ${STATUSES[bulkStatus]} for full month`}
+            onClick={() => onStudentBulkUpdate(student.regNo, bulkStatus)}
             style={{
               padding: '0.25rem',
               borderRadius: '50%',

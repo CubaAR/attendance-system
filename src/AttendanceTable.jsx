@@ -7,6 +7,9 @@ export const AttendanceTable = ({
   daysArray,
   insights,
   handleCellChange,
+  bulkStatus,
+  handleDayBulkUpdate,
+  handleStudentBulkUpdate
 }) => (
   <div className="attendance-table-container">
     <table className="attendance-table">
@@ -42,6 +45,7 @@ export const AttendanceTable = ({
                   {!isSunday && (
                     <button
                       title={`Bulk update - ${date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', weekday: 'short' })}`}
+                      onClick={() => handleDayBulkUpdate(day, bulkStatus)}
                       style={{
                         padding: '0.25rem',
                         borderRadius: '50%',
@@ -81,6 +85,9 @@ export const AttendanceTable = ({
             attendance={appState.attendance}
             onCellChange={handleCellChange}
             studentTotalP={insights.studentMonthlyTotals[student.regNo]?.P || 0}
+            bulkStatus={bulkStatus}
+            onStudentBulkUpdate={handleStudentBulkUpdate}
+            
           />
         ))}
         </tbody>
