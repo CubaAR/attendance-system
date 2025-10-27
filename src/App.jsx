@@ -8,6 +8,7 @@ import {
 import { AttendanceTable } from "./AttendanceTable";
 import { CalendarRange } from "lucide-react";
 import { BulkStatusSelector } from "./BulkStatusSelector";
+import { MonthlyInsights } from "./MonthlyInsights";
 
 const App = () => {
   const currentDate = new Date();
@@ -140,6 +141,20 @@ const App = () => {
         }
       }
     }
+    
+    const holidayDays = new Set();
+      for (const day of days) {
+        let allHoliday = true;
+        for (const student of students) {
+          const record = attendance[student.regNo]?.[day];
+          if (!(record?.M === 'H' && record?.A === 'H')) {
+            allHoliday = false;
+            break;
+          }
+        }
+        if (allHoliday) holidayDays.add(day);
+      }
+      stats.totalH = holidayDays.size;
 
     return stats;
   }, [appState.attendance, appState.students, appState.daysInMonth]);
@@ -169,8 +184,9 @@ const App = () => {
         handleCellChange={handleCellChange}
         handleStudentBulkUpdate={handleStudentBulkUpdate}
         applyBulkStatus={applyBulkStatus}
-        
       />
+
+      <MonthlyInsights insights={insights}/>
     </div>
   );
 };
