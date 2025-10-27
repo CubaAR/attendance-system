@@ -40,7 +40,7 @@ const App = () => {
       return { ...prev, attendance: newAttendance }; // other states are same , no changes made
     });
   }, []);
-  // some many copies due to immutabiltly , should not edit the state directlty
+  // so many copies due to immutabiltly , should not edit the state directlty
 
   // ---------------  Insights ----------------
   const insights = useMemo(() => {
