@@ -179,3 +179,43 @@
   appearance: none;
 }
 
+/* Monthly insights */
+
+.monthly-insights {
+  margin-top: 2.5rem;
+  padding: 1.5rem;
+  background-color: white;
+  border-radius: 1rem;
+  box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+}
+
+.monthly-insights h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #4f46e5;
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 0.5rem;
+}
+.attendance-grid {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.insight-card {
+  padding: 1rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.insight-green { background-color: #ecfdf5; color: #047857; }
+.insight-red { background-color: #fef2f2; color: #b91c1c; }
+.insight-blue { background-color: #eff6ff; color: #1e40af; }
+.insight-gray { background-color: #f9fafb; color: #374151; }
