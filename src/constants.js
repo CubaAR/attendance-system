@@ -9,7 +9,7 @@ export const STATUSES = {
 
 export const initialStudents = [
   { regNo: '001', name: 'Che Guevara' },
-  { regNo: '002', name: ' Fidel Castro' },
+  { regNo: '002', name: 'Fidel Castro' },
   { regNo: '003', name: 'Karl Marx' },
   { regNo: '004', name: 'Diana Prince' },
   { regNo: '005', name: 'Ethan Hunt' },
@@ -28,7 +28,7 @@ export const getInitialAttendance = (students, daysInMonth) => {
     attendance[student.regNo] = {};
     for (let day = 1; day <= daysInMonth; day++) {
       const date = new Date(new Date().getFullYear(), new Date().getMonth(), day);
-     console.log(date);
+      
       const isSunday = date.getDay() === 0;
 
       attendance[student.regNo][day] = {
@@ -42,4 +42,3 @@ export const getInitialAttendance = (students, daysInMonth) => {
   }
   return attendance;
 };
-

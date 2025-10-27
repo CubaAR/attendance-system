@@ -57,7 +57,7 @@ export const AttendanceTable = ({
               </th>
             );
           })}
-
+          {/* Total present for entire month per students */}
           <th className="header-indigo" rowSpan="2">Total P</th>
         </tr>
         {/* Morning and afteroon slots */}
@@ -80,6 +80,7 @@ export const AttendanceTable = ({
             daysArray={daysArray}
             attendance={appState.attendance}
             onCellChange={handleCellChange}
+            studentTotalP={insights.studentMonthlyTotals[student.regNo]?.P || 0}
           />
         ))}
         </tbody>

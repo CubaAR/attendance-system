@@ -69,6 +69,7 @@ const App = () => {
           if (isPresent) {
             stats.totalP++;
             stats.dailyPresentCounts[day]++;
+            stats.studentMonthlyTotals[regNo].P++;
           }
 
           if (dayRecord.M === "A" && dayRecord.A === "A") {
@@ -82,7 +83,6 @@ const App = () => {
         }
       }
     }
-
 
     return stats;
   }, [appState.attendance, appState.students, appState.daysInMonth]);
