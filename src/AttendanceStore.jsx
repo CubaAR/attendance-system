@@ -2,12 +2,14 @@ import { create } from "zustand";
 import { getDaysInMonth, initialStudents, getInitialAttendance } from "./constants";
 
 const currentDate = new Date();
+const daysInMonth = getDaysInMonth(currentDate);
 
+// create store
 export const useAttendanceStore = create((set, get) => ({
   currentDate,
-  daysInMonth: getDaysInMonth(currentDate),
+  daysInMonth,
   students: initialStudents,
-  attendance: getInitialAttendance(initialStudents, getDaysInMonth(currentDate)),
+  attendance: getInitialAttendance(initialStudents, currentDate),
   bulkStatus: "P",
 
   // Set bulk status

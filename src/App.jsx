@@ -28,6 +28,7 @@ const App = () => {
     bulkMonthUpdate(status);
   };
 
+  // --------------- Insights ---------------
   const insights = useMemo(() => {
     const stats = {
       totalP: 0,
@@ -98,7 +99,7 @@ const App = () => {
         appState={{ currentDate, daysInMonth, students, attendance, bulkStatus }}
         daysArray={daysArray}
         insights={insights}
-        handleCellChange={updateCell}
+        handleCellChange={updateCell} // imported from store
         handleDayBulkUpdate={bulkDayUpdate}
         handleStudentBulkUpdate={bulkStudentUpdate}
         applyBulkStatus={applyBulkStatus}
