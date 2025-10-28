@@ -1,6 +1,8 @@
 import './App.css';
 
-export const InsightCard = ({ title, value, color, icon }) => (
+// Resuable component for monthly insights
+
+export const InsightCard = ({ color,value, icon, title }) => (
   <>
     <div className={`insight-card insight-${color}`}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

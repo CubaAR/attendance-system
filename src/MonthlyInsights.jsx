@@ -3,6 +3,7 @@ import { InsightCard } from "./InsightCard";
 import { Calendar, CheckCircle, XCircle, Clock } from "lucide-react";
 
 export const MonthlyInsights = React.memo(({ insights }) => (
+  
   <>
     <div className="monthly-insights">
       <h2>
@@ -12,25 +13,25 @@ export const MonthlyInsights = React.memo(({ insights }) => (
 
       <div className="attendance-grid">
         <InsightCard
-          title="Total Present"
+          title="Present count"
           value={insights.totalP}
           color="green"
           icon={<CheckCircle size={20} />}
         />
         <InsightCard
-          title="Total Absent"
+          title="Absent count"
           value={insights.totalA}
           color="red"
           icon={<XCircle size={20} />}
         />
         <InsightCard
-          title="Total OD in this month"
+          title="OD count"
           value={insights.totalO}
           color="blue"
           icon={<Clock size={20} />}
         />
         <InsightCard
-          title="Total Holidays"
+          title="Holidays"
           value={insights.totalH}
           color="gray"
           icon={<Calendar size={20} />}
