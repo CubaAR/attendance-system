@@ -43,28 +43,30 @@ const App = () => {
 
     for (const student of students) {
       stats.studentMonthlyTotals[student.regNo] = { P: 0, A: 0, O: 0, H: 0 };
+      
       for (const day of daysArray) {
-        const record = attendance[student.regNo]?.[day];
-        if (!record) continue;
+        const dayRecord = attendance[student.regNo]?.[day];
+        if (!dayRecord) continue;
 
-        const isPresent = record.M === "P" || record.A === "P";
+        const isPresent = dayRecord.M === "P" || dayRecord.A === "P";
         if (isPresent) {
           stats.totalP++;
           stats.dailyPresentCounts[day]++;
           stats.studentMonthlyTotals[student.regNo].P++;
         }
 
-        if (record.M === "A" && record.A === "A") {
+        if (dayRecord.M === "A" && dayRecord.A === "A") {
           stats.totalA++;
           stats.studentMonthlyTotals[student.regNo].A++;
         }
 
-        if (record.M === "OD" || record.A === "OD") {
+        if (dayRecord.M === "OD" || dayRecord.A === "OD") {
           stats.totalO++;
         }
       }
     }
 
+    // Holds unique items 
     const holidayDays = new Set();
     for (const day of daysArray) {
       let allHoliday = true;
@@ -78,6 +80,7 @@ const App = () => {
       if (allHoliday) holidayDays.add(day);
     }
     stats.totalH = holidayDays.size;
+    // size = number of unique items 
 
     return stats;
   }, [attendance, students, daysArray]);
@@ -90,7 +93,7 @@ const App = () => {
       </h1>
 
       <BulkStatusSelector
-        bulkStatus={bulkStatus}
+        bulkStatus={bulkStatus} // imported from store
         onBulkStatusChange={setBulkStatus}
         applyBulkStatus={applyBulkStatus}
       />

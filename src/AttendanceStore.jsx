@@ -4,26 +4,26 @@ import { getDaysInMonth, initialStudents, getInitialAttendance } from "./constan
 const currentDate = new Date();
 const daysInMonth = getDaysInMonth(currentDate);
 
-// create store
+// ----------------- create store (global state) -----------------
 export const useAttendanceStore = create((set, get) => ({
   currentDate,
   daysInMonth,
   students: initialStudents,
-  attendance: getInitialAttendance(initialStudents, currentDate),
+  attendance: getInitialAttendance(initialStudents, getDaysInMonth(currentDate)),
   bulkStatus: "P",
 
-  // Set bulk status
+  //----------------- Global Set bulk status -----------------
   setBulkStatus: (status) => set({ bulkStatus: status }),
 
-  // Update single cell
+  // ----------------- Updation in single cell -----------------
   updateCell: (regNo, day, slot, value) => {
-    const newAttendance = { ...get().attendance };
+    const newAttendance = { ...get().attendance }; // Direct access to the current satate via 'get()'
     newAttendance[regNo] = { ...newAttendance[regNo] };
     newAttendance[regNo][day] = { ...newAttendance[regNo][day], [slot]: value };
-    set({ attendance: newAttendance });
+    set({ attendance: newAttendance }); // Returns new state
   },
 
-  // Bulk update per day
+  // ----------------- Bulk update per day -----------------
   bulkDayUpdate: (day, value) => {
     const newAttendance = { ...get().attendance };
     get().students.forEach((student) => {
@@ -33,7 +33,7 @@ export const useAttendanceStore = create((set, get) => ({
     set({ attendance: newAttendance });
   },
 
-  // Bulk update per student
+  //----------------- Bulk update per student -----------------
   bulkStudentUpdate: (regNo, value) => {
     const newAttendance = { ...get().attendance };
     for (let day = 1; day <= get().daysInMonth; day++) {
@@ -44,7 +44,7 @@ export const useAttendanceStore = create((set, get) => ({
     set({ attendance: newAttendance });
   },
 
-  // Bulk update entire month
+  //----------------- Bulk update entire month -----------------
   bulkMonthUpdate: (value) => {
     const newAttendance = { ...get().attendance };
     get().students.forEach((student) => {

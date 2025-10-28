@@ -1,4 +1,4 @@
-// import React from 'react';
+import React from 'react';
 import { Plus } from 'lucide-react';
 import './App.css';
 import { STATUSES } from './constants';

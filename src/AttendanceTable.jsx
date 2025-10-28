@@ -55,8 +55,10 @@ export const AttendanceTable = ({
                   <small style={{ fontSize: '0.7rem' }}>
                     {date.toLocaleDateString('en-US', { weekday: 'short' })}
                   </small>
+
                   {/* Disable editings in sundays */}
                   {!isSunday && (
+                    
                     // Bulk selection per day 
                     <button
                       title={`Bulk update - ${date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', weekday: 'short' })}`}
