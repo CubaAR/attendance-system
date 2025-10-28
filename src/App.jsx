@@ -1,108 +1,34 @@
 import "./App.css";
-import { useState, useMemo, useCallback } from "react";
-import {
-  getDaysInMonth,
-  initialStudents,
-  getInitialAttendance,
-} from "./constants";
+import { useMemo } from "react";
 import { AttendanceTable } from "./AttendanceTable";
-import { CalendarRange } from "lucide-react";
 import { BulkStatusSelector } from "./BulkStatusSelector";
 import { MonthlyInsights } from "./MonthlyInsights";
+import { CalendarRange } from "lucide-react";
+import { useAttendanceStore } from "./AttendanceStore";
 
 const App = () => {
-  const currentDate = new Date();
-  const daysInMonth = getDaysInMonth(currentDate);
-
-// single state
-  const [appState, setAppState] = useState({
+  const {
     currentDate,
     daysInMonth,
-    students: initialStudents,
-    attendance: getInitialAttendance(initialStudents, daysInMonth),
-    bulkStatus: "P",
-  });
+    students,
+    attendance,
+    bulkStatus,
+    setBulkStatus,
+    updateCell,
+    bulkDayUpdate,
+    bulkStudentUpdate,
+    bulkMonthUpdate,
+  } = useAttendanceStore();
 
-  const daysArray = Array.from(
-    { length: appState.daysInMonth },
-    (_, i) => i + 1
-  );
-  const currentMonthName = appState.currentDate.toLocaleString("default", {
-    month: "long",
-    year: "numeric",
-  });
+  const daysArray = Array.from({ length: daysInMonth }, (_, i) => i + 1);
+  const currentMonthName = currentDate.toLocaleString("default", { month: "long", year: "numeric" });
 
-  // --------------- Handlers ----------------
+  const applyBulkStatus = (status) => {
+    if (!status) return;
+    bulkMonthUpdate(status);
+  };
 
-  const handleCellChange = useCallback((regNo, day, slot, newStatus) => {
-    setAppState((prev) => {
-      const newAttendance = { ...prev.attendance }; // copies full attendance map
-      newAttendance[regNo] = { ...newAttendance[regNo] }; // copies regNO
-      newAttendance[regNo][day] = { ...newAttendance[regNo][day] }; //copies day
-      newAttendance[regNo][day][slot] = newStatus; // changes made and updated to newStatus (all the changes are updated in newStatus and rest are same)
-      return { ...prev, attendance: newAttendance }; // other states are same , no changes made
-    });
-  }, []);
-  // Too many copies due to immutabiltly , should not edit the state directlty
-
-  // selection of bulk operation
-  const handleBulkStatusChange = useCallback((newStatus) => {
-    setAppState((prev) => ({ ...prev, bulkStatus: newStatus }));
-  }, []);
-
-  // selects entire students and days (entire cell in the table)
-  const applyBulkStatus = useCallback((status) => {
-    setAppState((prev) => {
-      const newAttendance = { ...prev.attendance };
-      for (const student of prev.students) {
-        newAttendance[student.regNo] = { ...newAttendance[student.regNo] };  // students
-        for (let day = 1; day <= prev.daysInMonth; day++) {
-           const date = new Date(prev.currentDate.getFullYear(), prev.currentDate.getMonth(), day);
-          const isSunday = date.getDay() === 0; 
-        
-        if (isSunday) continue;
-          
-          newAttendance[student.regNo][day] = {M: status , A: status}; // days 
-        }
-      }
-      return { ...prev, attendance: newAttendance };
-    });
-  }, []);
-
-// Attendance table
-  const handleDayBulkUpdate = useCallback((day, status) => {
-    setAppState(prev => {
-      const newAttendance = { ...prev.attendance };
-      for (const student of prev.students) {
-        newAttendance[student.regNo] = { ...newAttendance[student.regNo] };
-        newAttendance[student.regNo][day] = { M: status, A: status };
-      }
-      return { ...prev, attendance: newAttendance };
-    });
-  }, []);
-
-  // Attendance row
-  const handleStudentBulkUpdate = useCallback((regNo, status) => {
-    setAppState(prev => { 
-      const newAttendance = { ...prev.attendance };
-
-      for (let day = 1; day <= prev.daysInMonth; day++) {
-        const date = new Date(prev.currentDate.getFullYear(), prev.currentDate.getMonth(), day);
-        const isSunday = date.getDay() === 0;
-        if (isSunday) continue;
-
-        if (!newAttendance[regNo]) newAttendance[regNo] = {};
-          newAttendance[regNo][day] = { M: status, A: status };
-    }
-
-    return { ...prev, attendance: newAttendance };
-  });
-}, []);
-
-
-  // ---------------  Insights ----------------
   const insights = useMemo(() => {
-    const { students, attendance, daysInMonth } = appState;
     const stats = {
       totalP: 0,
       totalA: 0,
@@ -112,81 +38,74 @@ const App = () => {
       studentMonthlyTotals: {},
     };
 
-    const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
-    days.forEach((day) => (stats.dailyPresentCounts[day] = 0));
+    daysArray.forEach((day) => (stats.dailyPresentCounts[day] = 0));
 
     for (const student of students) {
-      const regNo = student.regNo;
-      stats.studentMonthlyTotals[regNo] = { P: 0, A: 0, O: 0, H: 0 };
+      stats.studentMonthlyTotals[student.regNo] = { P: 0, A: 0, O: 0, H: 0 };
+      for (const day of daysArray) {
+        const record = attendance[student.regNo]?.[day];
+        if (!record) continue;
 
-      for (const day of days) {
-        const dayRecord = attendance[regNo]?.[day];
-        if (dayRecord) {
-          const isPresent = dayRecord.M === "P" || dayRecord.A === "P";
+        const isPresent = record.M === "P" || record.A === "P";
+        if (isPresent) {
+          stats.totalP++;
+          stats.dailyPresentCounts[day]++;
+          stats.studentMonthlyTotals[student.regNo].P++;
+        }
 
-          if (isPresent) {
-            stats.totalP++;
-            stats.dailyPresentCounts[day]++;
-            stats.studentMonthlyTotals[regNo].P++;
-          }
+        if (record.M === "A" && record.A === "A") {
+          stats.totalA++;
+          stats.studentMonthlyTotals[student.regNo].A++;
+        }
 
-          if (dayRecord.M === "A" && dayRecord.A === "A") {
-            stats.totalA++;
-            stats.studentMonthlyTotals[regNo].A++;
-          }
-
-          if (dayRecord.M === "OD" || dayRecord.A === "OD") {
-            stats.totalO++;
-          }
+        if (record.M === "OD" || record.A === "OD") {
+          stats.totalO++;
         }
       }
     }
-    
+
     const holidayDays = new Set();
-      for (const day of days) {
-        let allHoliday = true;
-        for (const student of students) {
-          const record = attendance[student.regNo]?.[day];
-          if (!(record?.M === 'H' && record?.A === 'H')) {
-            allHoliday = false;
-            break;
-          }
+    for (const day of daysArray) {
+      let allHoliday = true;
+      for (const student of students) {
+        const record = attendance[student.regNo]?.[day];
+        if (!(record?.M === "H" && record?.A === "H")) {
+          allHoliday = false;
+          break;
         }
-        if (allHoliday) holidayDays.add(day);
       }
-      stats.totalH = holidayDays.size;
+      if (allHoliday) holidayDays.add(day);
+    }
+    stats.totalH = holidayDays.size;
 
     return stats;
-  }, [appState.attendance, appState.students, appState.daysInMonth]);
+  }, [attendance, students, daysArray]);
 
   return (
     <div className="app-container">
-
       <h1 className="app-header">
         <CalendarRange size={32} style={{ marginRight: "0.5rem" }} />
         Attendance Register ({currentMonthName})
-      </h1> 
-       
+      </h1>
 
       <BulkStatusSelector
-        bulkStatus={appState.bulkStatus}
-        onBulkStatusChange={handleBulkStatusChange}
+        bulkStatus={bulkStatus}
+        onBulkStatusChange={setBulkStatus}
         applyBulkStatus={applyBulkStatus}
       />
-      
 
       <AttendanceTable
-        appState={appState}
+        appState={{ currentDate, daysInMonth, students, attendance, bulkStatus }}
         daysArray={daysArray}
         insights={insights}
-        bulkStatus={appState.bulkStatus}
-        handleDayBulkUpdate={handleDayBulkUpdate}
-        handleCellChange={handleCellChange}
-        handleStudentBulkUpdate={handleStudentBulkUpdate}
+        handleCellChange={updateCell}
+        handleDayBulkUpdate={bulkDayUpdate}
+        handleStudentBulkUpdate={bulkStudentUpdate}
         applyBulkStatus={applyBulkStatus}
+        bulkStatus={bulkStatus}
       />
 
-      <MonthlyInsights insights={insights}/>
+      <MonthlyInsights insights={insights} />
     </div>
   );
 };
